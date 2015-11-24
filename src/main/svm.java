@@ -14,9 +14,6 @@ import libsvm.*;
 
 public class svm {
 	
-	double[][] train;
-	double[][] test;
-	
 	public enum Classes {
 		CLUTCH("images/clutch", 0),
 		HOBO("images/hobo", 1),
@@ -116,5 +113,4 @@ public class svm {
 		}
 		return randomIndexes;
 	}
-	
 }

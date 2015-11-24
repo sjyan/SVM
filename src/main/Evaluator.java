@@ -2,6 +2,7 @@ package main;
 
 import java.awt.*;
 import java.awt.image.*;
+import libsvm.*;
 
 public class Evaluator {
 	
@@ -65,5 +66,18 @@ public class Evaluator {
 		}
 		
 		return vec;
+	}
+	
+	public static svm_node[] convertAttributes(int[] attributes) {
+		svm_node[] nodes = new svm_node[VECSIZE];
+		
+		for(int i = 0; i < attributes.length; i++) {
+			svm_node node = new svm_node();
+			node.index = i;
+			node.value = attributes[i];
+			nodes[i] = node;
+		}
+		
+		return nodes;
 	}
 }

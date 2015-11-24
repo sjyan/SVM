@@ -5,7 +5,9 @@ import java.awt.image.*;
 
 public class Evaluator {
 	
-	static int[][][] RGB = new int[8][8][8];
+	static final int VECSIZE = 32 * 32 * 3;
+	static final int BINS = 8;
+	static int[][][] RGB = new int[BINS][BINS][BINS];
 	static int width, height;
 	
 	public static int[][][] sortImage(BufferedImage image) {
@@ -13,10 +15,6 @@ public class Evaluator {
 		height = image.getHeight();
 		int pixel;
 		Color c;
-		
-		int red;
-		int green;
-		int blue;
 		
 		for (int i=0; i<width; i++) {
 		for (int j=0; j<height; j++) {
@@ -43,5 +41,29 @@ public class Evaluator {
 		}
 			System.out.println("-----------------");
 		}
+	}
+	
+	public static int[] concatenateImage(BufferedImage image) {
+		int[] vec = new int[VECSIZE];
+		int pixel;
+		Color c;
+		int count = 0;
+		
+		for(int i = 0; i < 32; i++) {
+			for(int j = 0; j < 32; j++) {
+				pixel = image.getRGB(i, j);
+				c = new Color(pixel);
+				
+				// append RGB values per pixel
+				vec[count] = c.getRed();
+					count++;
+				vec[count] = c.getGreen();
+					count++;
+				vec[count] = c.getBlue();
+					count++;
+			}
+		}
+		
+		return vec;
 	}
 }

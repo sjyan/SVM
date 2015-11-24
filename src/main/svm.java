@@ -9,10 +9,13 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import libsvm.svm_problem;
+import libsvm.*;
 
 
 public class svm {
+	
+	double[][] train;
+	double[][] test;
 	
 	public enum Classes {
 		CLUTCH("images/clutch", 0),
@@ -113,4 +116,5 @@ public class svm {
 		}
 		return randomIndexes;
 	}
+	
 }

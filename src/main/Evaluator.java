@@ -2,12 +2,15 @@ package main;
 
 import java.awt.*;
 import java.awt.image.*;
+import libsvm.*;
 
 import libsvm.*;
 
 public class Evaluator {
 	
-	static int[][][] RGB = new int[8][8][8];
+	static final int VECSIZE = 32 * 32 * 3;
+	static final int BINS = 8;
+	static int[][][] RGB = new int[BINS][BINS][BINS];
 	static int width, height;
 	
 	public static int[][][] sortImage(BufferedImage image) {
@@ -43,5 +46,40 @@ public class Evaluator {
 		}
 	}
 	
+	public static int[] concatenateImage(BufferedImage image) {
+		int[] vec = new int[VECSIZE];
+		int pixel;
+		Color c;
+		int count = 0;
+		
+		for(int i = 0; i < 32; i++) {
+			for(int j = 0; j < 32; j++) {
+				pixel = image.getRGB(i, j);
+				c = new Color(pixel);
+				
+				// append RGB values per pixel
+				vec[count] = c.getRed();
+					count++;
+				vec[count] = c.getGreen();
+					count++;
+				vec[count] = c.getBlue();
+					count++;
+			}
+		}
+		
+		return vec;
+	}
 	
+	public static svm_node[] convertAttributes(int[] attributes) {
+		svm_node[] nodes = new svm_node[VECSIZE];
+		
+		for(int i = 0; i < attributes.length; i++) {
+			svm_node node = new svm_node();
+			node.index = i;
+			node.value = attributes[i];
+			nodes[i] = node;
+		}
+		
+		return nodes;
+	}
 }

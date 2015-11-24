@@ -9,7 +9,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import libsvm.svm_problem;
+import libsvm.*;
 
 
 public class svm {

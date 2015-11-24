@@ -6,7 +6,7 @@ import libsvm.*;
 
 import libsvm.*;
 
-public class Evaluator {
+public class ConverterHelper {
 	
 	static final int VECSIZE = 32 * 32 * 3;
 	static final int BINS = 8;
@@ -47,6 +47,8 @@ public class Evaluator {
 	}
 	
 	public static int[] concatenateImage(BufferedImage image) {
+		svm_node[] svmData;
+		
 		int[] vec = new int[VECSIZE];
 		int pixel;
 		Color c;
@@ -68,6 +70,10 @@ public class Evaluator {
 		}
 		
 		return vec;
+		
+//		svmData = convertAttributes(vec);
+//		
+//		return svmData;
 	}
 	
 	public static svm_node[] convertAttributes(int[] attributes) {

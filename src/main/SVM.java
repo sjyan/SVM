@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 import libsvm.*;
 
 
-public class svm {
+public class SVM {
 	
 	public enum Classes {
 		CLUTCH("images/clutch", 0),
@@ -30,18 +30,24 @@ public class svm {
 	private static final int NUM_CLASSES = 4;
 	private static final double PERCENTAGE_TRAINING = .70;
 	
-	public svm() throws IOException {
+	List<List<BufferedImage>> trainingImages;
+	List<List<BufferedImage>> testingImages;
+	
+	public SVM() throws IOException {
 		// List containing training and testing images for each class. 
 		// Classes.index corresponds to the index in each List
 		// I.e. the List at index 1 in trainingImages corresponds to the training images of HOBO
-		List<List<Image>> trainingImages = new ArrayList<List<Image>>();
-		List<List<Image>> testingImages = new ArrayList<List<Image>>();
+		
+//		List<List<Image>> trainingImages = new ArrayList<List<Image>>();
+//		List<List<Image>> testingImages = new ArrayList<List<Image>>();
+		trainingImages = new ArrayList<List<BufferedImage>>();
+		testingImages = new ArrayList<List<BufferedImage>>();
 
 		// Initialize the List of Lists
 		// I don't think it's necessary to do this now oh well refactor later
 		for (int i = 0; i < NUM_CLASSES; i++) {
-			trainingImages.add(i, new ArrayList<Image>());
-			testingImages.add(i, new ArrayList<Image>());
+			trainingImages.add(i, new ArrayList<BufferedImage>());
+			testingImages.add(i, new ArrayList<BufferedImage>());
 		}
 		
 		// Iterate through the classes
@@ -112,5 +118,62 @@ public class svm {
 			randomIndexes.add(random);
 		}
 		return randomIndexes;
+	}
+	
+	public svm_model testClutchParams() {
+		svm_problem prob = new svm_problem();
+		
+		List<BufferedImage> clutches = trainingImages.get(0);
+		int numNodes = clutches.size()/2;
+		
+		double[] labels = new double[numNodes];
+		for (int i=0; i<labels.length; i++) {
+			labels[i] = 1;
+		}
+		
+		svm_node[][] imageNodes = new svm_node[numNodes][];
+		for (int i=0; i<numNodes; i++) {
+			BufferedImage image = clutches.get(i);
+			
+			imageNodes[i] = ConverterHelper.convertAttributes(ConverterHelper.concatenateImage(image));
+		}
+		
+		prob.l = numNodes;
+		prob.y = labels;
+		prob.x = imageNodes;
+		
+		
+		svm_parameter param = new svm_parameter();
+		param.kernel_type = svm_parameter.LINEAR;
+		param.C = 1;
+		
+		svm_model model = svm.svm_train(prob, param);
+		
+		return model;
+	}
+	
+	public double evaluate(svm_model model) {
+		List<BufferedImage> clutches = trainingImages.get(0);
+		int testNodes = (clutches.size()/2) + 1;
+		
+		BufferedImage image = clutches.get(testNodes);
+		svm_node[] nodes;
+		
+		int[] attributes = ConverterHelper.concatenateImage(image);
+		nodes = ConverterHelper.convertAttributes(attributes);
+		
+		int totalClasses = 2;
+		int[] labels = new int[totalClasses];
+		svm.svm_get_labels(model, labels);
+		
+	    double[] prob_estimates = new double[totalClasses];
+	    double v = svm.svm_predict_probability(model, nodes, prob_estimates);
+
+	    for (int i = 0; i < totalClasses; i++){
+	        System.out.print("(" + labels[i] + ":" + prob_estimates[i] + ")");
+	    }
+	    System.out.println("(Actual:" + attributes[0] + " Prediction:" + v + ")");            
+
+	    return v;
 	}
 }

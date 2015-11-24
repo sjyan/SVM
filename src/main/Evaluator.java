@@ -3,6 +3,8 @@ package main;
 import java.awt.*;
 import java.awt.image.*;
 
+import libsvm.*;
+
 public class Evaluator {
 	
 	static int[][][] RGB = new int[8][8][8];
@@ -13,10 +15,6 @@ public class Evaluator {
 		height = image.getHeight();
 		int pixel;
 		Color c;
-		
-		int red;
-		int green;
-		int blue;
 		
 		for (int i=0; i<width; i++) {
 		for (int j=0; j<height; j++) {
@@ -44,4 +42,6 @@ public class Evaluator {
 			System.out.println("-----------------");
 		}
 	}
+	
+	
 }

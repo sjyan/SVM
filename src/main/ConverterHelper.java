@@ -10,6 +10,7 @@ public class ConverterHelper {
 	
 	static final int VECSIZE = 32 * 32 * 3;
 	static final int BINS = 8;
+	static final int HSIZE = 8 * 8 * 8;
 	static int[][][] RGB = new int[BINS][BINS][BINS];
 	static int width, height;
 	
@@ -76,14 +77,32 @@ public class ConverterHelper {
 //		return svmData;
 	}
 	
-	public static svm_node[] convertAttributes(int[] attributes) {
+	public static svm_node[] convertVector(int[] vector) {
 		svm_node[] nodes = new svm_node[VECSIZE];
 		
-		for(int i = 0; i < attributes.length; i++) {
+		for(int i = 0; i < vector.length; i++) {
 			svm_node node = new svm_node();
 			node.index = i;
-			node.value = attributes[i];
+			node.value = vector[i];
 			nodes[i] = node;
+		}
+		
+		return nodes;
+	}
+	
+	public static svm_node[] convertHistogram(int[][][] colors) {
+		svm_node[] nodes = new svm_node[HSIZE];
+		
+		for (int x=0; x<8; x++) {
+		for (int y=0; x<8; x++) {
+		for (int z=0; x<8; x++) {
+			svm_node node = new svm_node();
+			int index = x + y + z;
+			node.index = index;
+			node.value = colors[x][y][z];
+			nodes[index] = node;
+		}
+		}
 		}
 		
 		return nodes;

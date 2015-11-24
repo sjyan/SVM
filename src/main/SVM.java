@@ -120,22 +120,27 @@ public class SVM {
 		return randomIndexes;
 	}
 	
+	//Tester method on Clutch only
+	//Should use 1/2 of the training for training
+	//Other 1/2 is used as tuning/testing
 	public svm_model testClutchParams() {
-		svm_problem prob = new svm_problem();
 		
+		svm_problem prob = new svm_problem();
 		List<BufferedImage> clutches = trainingImages.get(0);
 		int numNodes = clutches.size()/2;
 		
+		//Marking each label as clutch
 		double[] labels = new double[numNodes];
 		for (int i=0; i<labels.length; i++) {
 			labels[i] = 1;
 		}
 		
+		//Array of tuples
 		svm_node[][] imageNodes = new svm_node[numNodes][];
 		for (int i=0; i<numNodes; i++) {
 			BufferedImage image = clutches.get(i);
 			
-			imageNodes[i] = ConverterHelper.convertAttributes(ConverterHelper.concatenateImage(image));
+			imageNodes[i] = ConverterHelper.convertVector(ConverterHelper.concatenateImage(image));
 		}
 		
 		prob.l = numNodes;
@@ -143,6 +148,7 @@ public class SVM {
 		prob.x = imageNodes;
 		
 		
+		//Setting parameters for SVM
 		svm_parameter param = new svm_parameter();
 		param.kernel_type = svm_parameter.LINEAR;
 		param.C = 1;
@@ -152,26 +158,34 @@ public class SVM {
 		return model;
 	}
 	
+	//Evaluation for SVM Model
 	public double evaluate(svm_model model) {
+		
+		//Get other 1st image in other 1/2 of training set
 		List<BufferedImage> clutches = trainingImages.get(0);
 		int testNodes = (clutches.size()/2) + 1;
 		
 		BufferedImage image = clutches.get(testNodes);
 		svm_node[] nodes;
 		
-		int[] attributes = ConverterHelper.concatenateImage(image);
-		nodes = ConverterHelper.convertAttributes(attributes);
+		int[] vector = ConverterHelper.concatenateImage(image);
+		nodes = ConverterHelper.convertVector(vector);
 		
+		//Retrieve labels from model
 		int[] labels = new int[NUM_CLASSES];
 		svm.svm_get_labels(model, labels);
 		
+		//Retrieve probability of each label from model
 	    double[] prob_estimates = new double[NUM_CLASSES];
 	    double v = svm.svm_predict_probability(model, nodes, prob_estimates);
 
+	    //Iterate through classes and print probability
 	    for (int i = 0; i < NUM_CLASSES; i++){
 	        System.out.print("(" + labels[i] + ":" + prob_estimates[i] + ")");
 	    }
-	    System.out.println("(Actual:" + attributes[0] + " Prediction:" + v + ")");            
+	    
+	    //Compare value to prediction
+	    System.out.println("(Actual:" + vector[0] + " Prediction:" + v + ")");            
 
 	    return v;
 	}

@@ -162,14 +162,13 @@ public class SVM {
 		int[] attributes = ConverterHelper.concatenateImage(image);
 		nodes = ConverterHelper.convertAttributes(attributes);
 		
-		int totalClasses = 2;
-		int[] labels = new int[totalClasses];
+		int[] labels = new int[NUM_CLASSES];
 		svm.svm_get_labels(model, labels);
 		
-	    double[] prob_estimates = new double[totalClasses];
+	    double[] prob_estimates = new double[NUM_CLASSES];
 	    double v = svm.svm_predict_probability(model, nodes, prob_estimates);
 
-	    for (int i = 0; i < totalClasses; i++){
+	    for (int i = 0; i < NUM_CLASSES; i++){
 	        System.out.print("(" + labels[i] + ":" + prob_estimates[i] + ")");
 	    }
 	    System.out.println("(Actual:" + attributes[0] + " Prediction:" + v + ")");            

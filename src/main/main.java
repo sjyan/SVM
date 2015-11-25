@@ -1,9 +1,9 @@
 package main;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import libsvm.*;
+import libsvm.svm_model;
+import main.SVM.Classes;
 
 public class main {
 
@@ -21,12 +21,28 @@ public class main {
 //		test = Evaluator.sortImage(image);
 //		Evaluator.printHistogram(test);
 		
-		System.out.println("YO I WORK BRUH");
-		SVM stuff = new SVM();
-		System.out.println("GOT YO STUFF");
-		svm_model model = stuff.testClutchParams();
-		System.out.println("YEAH I MODEL");
-		stuff.evaluate(model);
+		SVM svm = new SVM();
+		svm.initData();
+		
+		// TRAINING LINEAR KERNEL (TINY IMAGE)
+		// Train Clutch
+		//svm_model clutchModel = svm.trainSVM(Classes.CLUTCH);
+		//svm.evaluate(Classes.CLUTCH, clutchModel);
+		// c= 4.5
+		// svm.trainAndEvaluateWithTuning(Classes.CLUTCH);
+		// Train Hobo
+//		svm.trainSVM(Classes.HOBO);
+		// c= 2.5
+		//svm.trainAndEvaluateWithTuning(Classes.HOBO);
+
+//		// Train Flats
+//		svm.trainSVM(Classes.FLATS);
+		svm.trainAndEvaluateWithTuning(Classes.FLATS);
+
+//		// Train Pumps
+//		svm.trainSVM(Classes.PUMPS);
+		
+		// TRAINING RBF KERNEL (TINY IMAGE)
 	}
 
 }

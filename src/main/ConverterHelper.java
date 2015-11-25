@@ -47,10 +47,10 @@ public class ConverterHelper {
 		}
 	}
 	
-	public static int[] concatenateImage(BufferedImage image) {
+	public static double[] concatenateImage(BufferedImage image) {
 		svm_node[] svmData;
 		
-		int[] vec = new int[VECSIZE];
+		double[] vec = new double[VECSIZE];
 		int pixel;
 		Color c;
 		int count = 0;
@@ -77,16 +77,19 @@ public class ConverterHelper {
 //		return svmData;
 	}
 	
-	public static svm_node[] convertVector(int[] vector) {
-		svm_node[] nodes = new svm_node[VECSIZE];
+	public static svm_node[] convertVector(double[] vector) {
+		svm_node[] nodes = new svm_node[VECSIZE + 1];
 		
 		for(int i = 0; i < vector.length; i++) {
 			svm_node node = new svm_node();
-			node.index = i;
+			node.index = i+1;
 			node.value = vector[i];
 			nodes[i] = node;
 		}
 		
+		svm_node node = new svm_node();
+		node.index = -1;
+		nodes[VECSIZE] = node; 
 		return nodes;
 	}
 	

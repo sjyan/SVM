@@ -120,7 +120,7 @@ public class SVM {
 		return randomIndexes;
 	}
 	
-	public svm_model trainSVM(Classes clazz, double c, double g, boolean isRBF) {
+	public svm_model trainSVM(Classes clazz, double c, double g, boolean isRBF, boolean isHisto) {
 		
 		svm_problem prob = new svm_problem();
 		List<BufferedImage> images = trainingImages.get(clazz.index);
@@ -140,29 +140,36 @@ public class SVM {
 		svm_node[][] imageNodes = new svm_node[numNodes][];
 		for (int i = 0; i < numNodes / 2; i++) {
 			BufferedImage image = images.get(i);
-			imageNodes[i] = ConverterHelper.convertVector(ConverterHelper.concatenateImage(image));
+			if (isHisto) {
+				imageNodes[i] = ConverterHelper.convertHistogram(ConverterHelper.sortImage(image));
+			} else {
+				imageNodes[i] = ConverterHelper.convertVector(ConverterHelper.concatenateImage(image));
+			}
 		}
 		
 		// Get negative examples (50%)
+		// Random out of the other 3 classes
 		List<BufferedImage> clutchNegatives = negativeTrainingImages.get(0);
 		for (int i = numNodes / 2; i < numNodes; i++) {
 			int randomIndex = (int) (Math.random() * numNodes / 2);
 			BufferedImage image = clutchNegatives.get(randomIndex);
-			imageNodes[i] = ConverterHelper.convertVector(ConverterHelper.concatenateImage(image));
+			if (isHisto) {
+				imageNodes[i] = ConverterHelper.convertHistogram(ConverterHelper.sortImage(image));
+			} else {
+				imageNodes[i] = ConverterHelper.convertVector(ConverterHelper.concatenateImage(image));
+			}
 		}
 		
 		prob.l = numNodes;
 		prob.y = labels;
 		prob.x = imageNodes;
 		
-		//Setting parameters for SVM
+		// Setting parameters for SVM
 		svm_parameter param = new svm_parameter();
 		if (isRBF) {
 			param.kernel_type = svm_parameter.RBF;
-
 		} else {
 			param.kernel_type = svm_parameter.LINEAR;
-
 		}
 		param.C = c;
 		param.nu = 0.5;
@@ -170,31 +177,30 @@ public class SVM {
 		param.eps =.001;
 		param.gamma = g;
 		param.probability = 1;
-		param.probability = 1;
 		
 		svm_model model = svm.svm_train(prob, param);
 		return model;
 	}
 	
 	//Evaluation for SVM Model Linear
-	public void trainAndEvaluateWithTuningLinear(Classes clazz) {
+	public void trainAndEvaluateWithTuningLinear(Classes clazz, boolean isHisto) {
 		for (double i = .1; i < 10; i = i + .4) {
-			svm_model model = trainSVM(clazz, i, DEFAULT_GAMMA, false);
-			evaluateLinear(clazz, model, i, -1);
+			svm_model model = trainSVM(clazz, i, DEFAULT_GAMMA, false, isHisto);
+			evaluate(clazz, model, i, -1);
 		}
 	}
 	
 	// Evaluation for SVM Model RBF
-	public void trainAndEvaluateWithTuningRBF(Classes clazz) {
+	public void trainAndEvaluateWithTuningRBF(Classes clazz, boolean isHisto) {
 		for (double i = .1; i < 10; i = i + .4) {
 			for (double g = .1; g < 5; g = g + .4) {
-				svm_model model = trainSVM(clazz, i, g, true);
-				evaluateLinear(clazz, model, i, g);
+				svm_model model = trainSVM(clazz, i, g, true, isHisto);
+				evaluate(clazz, model, i, g);
 			}
 		}
 	}
 	
-	public double evaluateLinear(Classes clazz, svm_model model, double cValue, double gValue) {
+	public double evaluate(Classes clazz, svm_model model, double cValue, double gValue) {
 		List<BufferedImage> images = trainingImages.get(0);
 		
 		int numOfPositiveTrainingImages = trainingImages.get(clazz.index).size();

@@ -97,8 +97,8 @@ public class ConverterHelper {
 		svm_node[] nodes = new svm_node[HSIZE];
 		
 		for (int x=0; x<8; x++) {
-		for (int y=0; x<8; x++) {
-		for (int z=0; x<8; x++) {
+		for (int y=0; y<8; y++) {
+		for (int z=0; z<8; z++) {
 			svm_node node = new svm_node();
 			int index = x + y*8 + z*64;
 			node.index = index;
@@ -107,7 +107,9 @@ public class ConverterHelper {
 		}
 		}
 		}
-		
+		svm_node node = new svm_node();
+		node.index = -1;
+		nodes[HSIZE-1] = node;
 		return nodes;
 	}
 }

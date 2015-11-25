@@ -26,23 +26,76 @@ public class main {
 		
 		// TRAINING LINEAR KERNEL (TINY IMAGE)
 		// Train Clutch
-		//svm_model clutchModel = svm.trainSVM(Classes.CLUTCH);
 		//svm.evaluate(Classes.CLUTCH, clutchModel);
-		// c= 4.5
-		// svm.trainAndEvaluateWithTuning(Classes.CLUTCH);
+		// c= 4.5, .992
+		// svm.trainAndEvaluateWithTuningLinear(Classes.CLUTCH, false);
+		
 		// Train Hobo
-//		svm.trainSVM(Classes.HOBO);
-		// c= 2.5
-		//svm.trainAndEvaluateWithTuning(Classes.HOBO);
+		// c= 2.5, .987
+		//svm.trainAndEvaluateWithTuningLinear(Classes.HOBO, false);
 
 //		// Train Flats
-//		svm.trainSVM(Classes.FLATS);
-		svm.trainAndEvaluateWithTuning(Classes.FLATS);
+		// c = 3.3, .992
+//		svm.trainAndEvaluateWithTuningLinear(Classes.FLATS, false);
 
 //		// Train Pumps
 //		svm.trainSVM(Classes.PUMPS);
-		
+		//svm.trainAndEvaluateWithTuningLinear(Classes.PUMPS, false);
+		// c = 2.9, .988
+
 		// TRAINING RBF KERNEL (TINY IMAGE)
+		// scores generally higer than the linear kernel counterpart
+		
+		// Train Clutch
+		// there were many instances where accuracy was 100%
+//		svm.trainAndEvaluateWithTuningRBF(Classes.CLUTCH, false);
+		
+		// Train Hobo
+		// c-.5, g =4.1 yielded 100%, other combination of parameters also did too
+		//svm.trainAndEvaluateWithTuningRBF(Classes.HOBO, false);
+		
+		// Train Flats
+		// c = 1.2, g = .4
+		// svm.trainAndEvaluateWithTuningRBF(Classes.FLATS, false);
+		
+		// Train Pumps
+		// c = 1.2, g = 2
+		// svm.trainAndEvaluateWithTuningRBF(Classes.PUMPS, false);
+
+		
+		
+		
+		
+		// TRAIN WITH HISTOGRAM LINEAR 
+		// Training Clutch
+		// 100% probability in a lot of cases, very good 
+		// svm.trainAndEvaluateWithTuningLinear(Classes.CLUTCH, true);
+		
+		// Training Hobo
+		// svm.trainAndEvaluateWithTuningLinear(Classes.HOBO, true);
+		
+		// Training Flats
+		// svm.trainAndEvaluateWithTuningLinear(Classes.FLATS, true);
+
+		
+		// Training Pumps
+		// svm.trainAndEvaluateWithTuningLinear(Classes.PUMPS, true);
+		
+		// TRAINING WITH HISTOGRAM RBF
+		
+		// Train clutch
+		 // svm.trainAndEvaluateWithTuningRBF(Classes.CLUTCH, true);
+		
+		// Train Hobo
+		//svm.trainAndEvaluateWithTuningRBF(Classes.HOBO, true);
+		
+		// Train Flats
+		// svm.trainAndEvaluateWithTuningRBF(Classes.FLATS, true);
+		
+		// Train Pumps
+		// svm.trainAndEvaluateWithTuningRBF(Classes.PUMPS, true);
+
+
 	}
 
 }

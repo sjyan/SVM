@@ -100,7 +100,7 @@ public class ConverterHelper {
 		for (int y=0; x<8; x++) {
 		for (int z=0; x<8; x++) {
 			svm_node node = new svm_node();
-			int index = x + y + z;
+			int index = x + y*8 + z*64;
 			node.index = index;
 			node.value = colors[x][y][z];
 			nodes[index] = node;

@@ -28,6 +28,7 @@ public class SVM {
 	
 	private static final int NUM_CLASSES = 4;
 	private static final double PERCENTAGE_TRAINING = .70;
+	private static final double DEFAULT_GAMMA = 0.5;
 
 	// List containing training and testing images for each class. 
 	// Classes.index corresponds to the index in each List
@@ -119,7 +120,7 @@ public class SVM {
 		return randomIndexes;
 	}
 	
-	public svm_model trainSVM(Classes clazz, double c) {
+	public svm_model trainSVM(Classes clazz, double c, double g, boolean isRBF) {
 		
 		svm_problem prob = new svm_problem();
 		List<BufferedImage> images = trainingImages.get(clazz.index);
@@ -156,26 +157,44 @@ public class SVM {
 		
 		//Setting parameters for SVM
 		svm_parameter param = new svm_parameter();
-		param.kernel_type = svm_parameter.LINEAR;
+		if (isRBF) {
+			param.kernel_type = svm_parameter.RBF;
+
+		} else {
+			param.kernel_type = svm_parameter.LINEAR;
+
+		}
 		param.C = c;
 		param.nu = 0.5;
 		param.cache_size = 20000;
 		param.eps =.001;
-		param.gamma = 0.5;
+		param.gamma = g;
+		param.probability = 1;
+		param.probability = 1;
 		
 		svm_model model = svm.svm_train(prob, param);
 		return model;
 	}
 	
-	//Evaluation for SVM Model
-	public void trainAndEvaluateWithTuning(Classes clazz) {
+	//Evaluation for SVM Model Linear
+	public void trainAndEvaluateWithTuningLinear(Classes clazz) {
 		for (double i = .1; i < 10; i = i + .4) {
-			svm_model model = trainSVM(clazz, i);
-			evaluate(clazz, model, i);
+			svm_model model = trainSVM(clazz, i, DEFAULT_GAMMA, false);
+			evaluateLinear(clazz, model, i, -1);
 		}
 	}
 	
-	public double evaluate(Classes clazz, svm_model model, double cValue) {
+	// Evaluation for SVM Model RBF
+	public void trainAndEvaluateWithTuningRBF(Classes clazz) {
+		for (double i = .1; i < 10; i = i + .4) {
+			for (double g = .1; g < 5; g = g + .4) {
+				svm_model model = trainSVM(clazz, i, g, true);
+				evaluateLinear(clazz, model, i, g);
+			}
+		}
+	}
+	
+	public double evaluateLinear(Classes clazz, svm_model model, double cValue, double gValue) {
 		List<BufferedImage> images = trainingImages.get(0);
 		
 		int numOfPositiveTrainingImages = trainingImages.get(clazz.index).size();
@@ -195,6 +214,9 @@ public class SVM {
 		}
 		double percentageCorrect = (numCorrect * 1.0) / numOfTuningImages;
 		System.out.println("The c value is " + cValue);
+		if (gValue != -1) {
+			System.out.println("The g value is  " + gValue);
+		}
 		System.out.println("The percentage predicted correct is " + percentageCorrect);
 	    return percentageCorrect;
 	}

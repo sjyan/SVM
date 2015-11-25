@@ -10,6 +10,7 @@ public class ConverterHelper {
 	
 	static final int VECSIZE = 32 * 32 * 3;
 	static final int BINS = 8;
+	static final int HSIZE = 8 * 8 * 8;
 	static int[][][] RGB = new int[BINS][BINS][BINS];
 	static int width, height;
 	
@@ -46,10 +47,10 @@ public class ConverterHelper {
 		}
 	}
 	
-	public static int[] concatenateImage(BufferedImage image) {
+	public static double[] concatenateImage(BufferedImage image) {
 		svm_node[] svmData;
 		
-		int[] vec = new int[VECSIZE];
+		double[] vec = new double[VECSIZE];
 		int pixel;
 		Color c;
 		int count = 0;
@@ -76,14 +77,35 @@ public class ConverterHelper {
 //		return svmData;
 	}
 	
-	public static svm_node[] convertAttributes(int[] attributes) {
-		svm_node[] nodes = new svm_node[VECSIZE];
+	public static svm_node[] convertVector(double[] vector) {
+		svm_node[] nodes = new svm_node[VECSIZE + 1];
 		
-		for(int i = 0; i < attributes.length; i++) {
+		for(int i = 0; i < vector.length; i++) {
 			svm_node node = new svm_node();
-			node.index = i;
-			node.value = attributes[i];
+			node.index = i+1;
+			node.value = vector[i];
 			nodes[i] = node;
+		}
+		
+		svm_node node = new svm_node();
+		node.index = -1;
+		nodes[VECSIZE] = node; 
+		return nodes;
+	}
+	
+	public static svm_node[] convertHistogram(int[][][] colors) {
+		svm_node[] nodes = new svm_node[HSIZE];
+		
+		for (int x=0; x<8; x++) {
+		for (int y=0; x<8; x++) {
+		for (int z=0; x<8; x++) {
+			svm_node node = new svm_node();
+			int index = x + y + z;
+			node.index = index;
+			node.value = colors[x][y][z];
+			nodes[index] = node;
+		}
+		}
 		}
 		
 		return nodes;

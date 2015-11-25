@@ -119,12 +119,16 @@ public class SVM {
 		return randomIndexes;
 	}
 	
+	//Tester method on Clutch only
+	//Should use 1/2 of the training for training
+	//Other 1/2 is used as tuning/testing
 	public svm_model trainSVM(Classes clazz, double c) {
-		svm_problem prob = new svm_problem();
 		
+		svm_problem prob = new svm_problem();
 		List<BufferedImage> images = trainingImages.get(clazz.index);
 		int numNodes = images.size();
 	
+		//Marking each label as clutch
 		double[] labels = new double[numNodes];
 		// One VS. All SVM
 		for (int i = 0; i < numNodes / 2; i++) {
@@ -136,10 +140,11 @@ public class SVM {
 		}
 		
 		// Get positive examples (50%)
+		//Array of tuples
 		svm_node[][] imageNodes = new svm_node[numNodes][];
 		for (int i = 0; i < numNodes / 2; i++) {
 			BufferedImage image = images.get(i);
-			imageNodes[i] = ConverterHelper.convertAttributes(ConverterHelper.concatenateImage(image));
+			imageNodes[i] = ConverterHelper.convertVector(ConverterHelper.concatenateImage(image));
 		}
 		
 		// Get negative examples (50%)
@@ -147,13 +152,14 @@ public class SVM {
 		for (int i = numNodes / 2; i < numNodes; i++) {
 			int randomIndex = (int) (Math.random() * numNodes / 2);
 			BufferedImage image = clutchNegatives.get(randomIndex);
-			imageNodes[i] = ConverterHelper.convertAttributes(ConverterHelper.concatenateImage(image));
+			imageNodes[i] = ConverterHelper.convertVector(ConverterHelper.concatenateImage(image));
 		}
 		
 		prob.l = numNodes;
 		prob.y = labels;
 		prob.x = imageNodes;
 		
+		//Setting parameters for SVM
 		svm_parameter param = new svm_parameter();
 		param.kernel_type = svm_parameter.LINEAR;
 		param.C = c;
@@ -166,6 +172,7 @@ public class SVM {
 		return model;
 	}
 	
+	//Evaluation for SVM Model
 	public void trainAndEvaluateWithTuning(Classes clazz) {
 		for (double i = .1; i < 10; i = i + .4) {
 			svm_model model = trainSVM(clazz, i);
@@ -184,8 +191,8 @@ public class SVM {
 			BufferedImage image = images.get(i);
 			
 			svm_node[] nodes;
-			double[] attributes = ConverterHelper.concatenateImage(image);
-			nodes = ConverterHelper.convertAttributes(attributes);
+			double[] vector = ConverterHelper.concatenateImage(image);
+			nodes = ConverterHelper.convertVector(vector);
 			double[] prob_estimates = new double[2];
 			double v = svm.svm_predict_probability(model, nodes, prob_estimates);
 			if ((int) v == 1) {

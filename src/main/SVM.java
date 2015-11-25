@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 
 import libsvm.*;
 
-
 public class SVM {
 	
 	public enum Classes {
@@ -29,17 +28,17 @@ public class SVM {
 	
 	private static final int NUM_CLASSES = 4;
 	private static final double PERCENTAGE_TRAINING = .70;
-	
+
+	// List containing training and testing images for each class. 
+	// Classes.index corresponds to the index in each List
+	// I.e. the List at index 1 in trainingImages corresponds to the training images of HOBO
 	List<List<BufferedImage>> trainingImages;
 	List<List<BufferedImage>> testingImages;
+	List<List<BufferedImage>> negativeTrainingImages;
 	
-	public SVM() throws IOException {
-		// List containing training and testing images for each class. 
-		// Classes.index corresponds to the index in each List
-		// I.e. the List at index 1 in trainingImages corresponds to the training images of HOBO
-		
-//		List<List<Image>> trainingImages = new ArrayList<List<Image>>();
-//		List<List<Image>> testingImages = new ArrayList<List<Image>>();
+	public SVM() throws IOException {}
+	
+	public void initData() throws IOException {
 		trainingImages = new ArrayList<List<BufferedImage>>();
 		testingImages = new ArrayList<List<BufferedImage>>();
 
@@ -87,9 +86,9 @@ public class SVM {
 		// Our negative examples will be composed of 1/3 from each of the other 3 classes
 		// Our full training data will be 50% positive and 50% negative
 		
-		List<List<Image>> negativeTrainingImages = new ArrayList<List<Image>>();
+		negativeTrainingImages = new ArrayList<List<BufferedImage>>();
 		for (int i = 0; i < NUM_CLASSES; i++) {
-			List<Image> negatives = new ArrayList<>();
+			List<BufferedImage> negatives = new ArrayList<>();
 			for (int j = 0; j < NUM_CLASSES; j++) {
 				if (i != j) {
 					List<Integer> randomIndexes = generateRandomIndexes(trainingImages.get(j),
@@ -100,10 +99,10 @@ public class SVM {
 				}
  			}
 			negativeTrainingImages.add(negatives);
-		}
-		
-		// Tiny image representation
-		
+		}	
+	}
+	
+	public void testAndEvaluate() {
 		
 	}
 
@@ -120,21 +119,34 @@ public class SVM {
 		return randomIndexes;
 	}
 	
-	public svm_model testClutchParams() {
+	public svm_model trainSVM(Classes clazz, double c) {
 		svm_problem prob = new svm_problem();
 		
-		List<BufferedImage> clutches = trainingImages.get(0);
-		int numNodes = clutches.size()/2;
-		
+		List<BufferedImage> images = trainingImages.get(clazz.index);
+		int numNodes = images.size();
+	
 		double[] labels = new double[numNodes];
-		for (int i=0; i<labels.length; i++) {
+		// One VS. All SVM
+		for (int i = 0; i < numNodes / 2; i++) {
 			labels[i] = 1;
 		}
 		
+		for (int i = numNodes/2; i < numNodes; i++) {
+			labels[i] = -1;
+		}
+		
+		// Get positive examples (50%)
 		svm_node[][] imageNodes = new svm_node[numNodes][];
-		for (int i=0; i<numNodes; i++) {
-			BufferedImage image = clutches.get(i);
-			
+		for (int i = 0; i < numNodes / 2; i++) {
+			BufferedImage image = images.get(i);
+			imageNodes[i] = ConverterHelper.convertAttributes(ConverterHelper.concatenateImage(image));
+		}
+		
+		// Get negative examples (50%)
+		List<BufferedImage> clutchNegatives = negativeTrainingImages.get(0);
+		for (int i = numNodes / 2; i < numNodes; i++) {
+			int randomIndex = (int) (Math.random() * numNodes / 2);
+			BufferedImage image = clutchNegatives.get(randomIndex);
 			imageNodes[i] = ConverterHelper.convertAttributes(ConverterHelper.concatenateImage(image));
 		}
 		
@@ -142,37 +154,51 @@ public class SVM {
 		prob.y = labels;
 		prob.x = imageNodes;
 		
-		
 		svm_parameter param = new svm_parameter();
 		param.kernel_type = svm_parameter.LINEAR;
-		param.C = 1;
+		param.C = c;
+		param.nu = 0.5;
+		param.cache_size = 20000;
+		param.eps =.001;
+		param.gamma = 0.5;
 		
 		svm_model model = svm.svm_train(prob, param);
-		
 		return model;
 	}
 	
-	public double evaluate(svm_model model) {
-		List<BufferedImage> clutches = trainingImages.get(0);
-		int testNodes = (clutches.size()/2) + 1;
+	public void trainAndEvaluateWithTuning(Classes clazz) {
+		for (double i = .1; i < 10; i = i + .4) {
+			svm_model model = trainSVM(clazz, i);
+			evaluate(clazz, model, i);
+		}
 		
-		BufferedImage image = clutches.get(testNodes);
-		svm_node[] nodes;
+	}
+	
+	public double evaluate(Classes clazz, svm_model model, double cValue) {
+		List<BufferedImage> images = trainingImages.get(0);
 		
-		int[] attributes = ConverterHelper.concatenateImage(image);
-		nodes = ConverterHelper.convertAttributes(attributes);
-		
-		int[] labels = new int[NUM_CLASSES];
-		svm.svm_get_labels(model, labels);
-		
-	    double[] prob_estimates = new double[NUM_CLASSES];
-	    double v = svm.svm_predict_probability(model, nodes, prob_estimates);
-
-	    for (int i = 0; i < NUM_CLASSES; i++){
-	        System.out.print("(" + labels[i] + ":" + prob_estimates[i] + ")");
-	    }
-	    System.out.println("(Actual:" + attributes[0] + " Prediction:" + v + ")");            
-
-	    return v;
+		int numOfPositiveTrainingImages = trainingImages.get(clazz.index).size();
+		int numOfTuningImages = numOfPositiveTrainingImages / 2;
+		int numCorrect = 0;
+		for (int i = numOfTuningImages; i < numOfPositiveTrainingImages; i++) {
+			BufferedImage image = images.get(i);
+			
+			svm_node[] nodes;
+			double[] attributes = ConverterHelper.concatenateImage(image);
+			nodes = ConverterHelper.convertAttributes(attributes);
+			double[] prob_estimates = new double[2];
+			double v = svm.svm_predict_probability(model, nodes, prob_estimates);
+			if ((int) v == 1) {
+				numCorrect++;
+			}  
+		}
+		double percentageCorrect = (numCorrect * 1.0) / numOfTuningImages;
+		System.out.println("The c value is " + cValue);
+		System.out.println("The percentage predicted correct is " + percentageCorrect);
+	    return percentageCorrect;
+	}
+	
+	public double test(svm_model model) {
+		return 0.0;
 	}
 }

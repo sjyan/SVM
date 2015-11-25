@@ -162,6 +162,7 @@ public class SVM {
 		param.cache_size = 20000;
 		param.eps =.001;
 		param.gamma = 0.5;
+		param.probability = 1;
 		
 		svm_model model = svm.svm_train(prob, param);
 		return model;

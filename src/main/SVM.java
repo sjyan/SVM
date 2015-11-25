@@ -119,16 +119,11 @@ public class SVM {
 		return randomIndexes;
 	}
 	
-	//Tester method on Clutch only
-	//Should use 1/2 of the training for training
-	//Other 1/2 is used as tuning/testing
 	public svm_model trainSVM(Classes clazz, double c) {
 		
 		svm_problem prob = new svm_problem();
 		List<BufferedImage> images = trainingImages.get(clazz.index);
 		int numNodes = images.size();
-	
-		//Marking each label as clutch
 		double[] labels = new double[numNodes];
 		// One VS. All SVM
 		for (int i = 0; i < numNodes / 2; i++) {
@@ -178,7 +173,6 @@ public class SVM {
 			svm_model model = trainSVM(clazz, i);
 			evaluate(clazz, model, i);
 		}
-		
 	}
 	
 	public double evaluate(Classes clazz, svm_model model, double cValue) {

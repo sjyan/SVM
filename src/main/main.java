@@ -33,7 +33,7 @@ public class main {
 		// Train Clutch
 		//svm.evaluate(Classes.CLUTCH, clutchModel);
 		// c= 4.5, .992
-		// svm.trainAndEvaluateWithTuningLinear(Classes.CLUTCH, false);
+		 svm.trainAndEvaluateWithTuningLinear(Classes.CLUTCH, false);
 		
 		// Train Hobo
 		// c= 2.5, .987
@@ -102,55 +102,332 @@ public class main {
 
 		
 		// TESTING W/ TINY IMAGE REPRESENTATION
+//		svm_model tinyImageLinearModelClutch = svm.trainSVM(Classes.CLUTCH, 4.5, .5, false, false);
+//		svm_model tinyImageLinearModelHobo = svm.trainSVM(Classes.HOBO, 2.5, .5, false, false);
+//		svm_model tinyImageLinearModelFlats = svm.trainSVM(Classes.FLATS, 3.3, .5, false, false);
+//		svm_model tinyImageLinearModelPumps = svm.trainSVM(Classes.PUMPS, 2.9, .5, false, false);
+//		
+//		svm_model tinyImageRBFModelClutch = svm.trainSVM(Classes.CLUTCH, 1, 3, true, false);
+//		svm_model tinyImageRBFModelHobo = svm.trainSVM(Classes.HOBO, .5, 4.1, true, false);
+//		svm_model tinyImageRBFModelFlats = svm.trainSVM(Classes.FLATS, 1.2, .4, true, false);
+//		svm_model tinyImageRBFModelPumps = svm.trainSVM(Classes.PUMPS, 1.2, 2, true, false);
+//		
+//		svm_model[] modelsToTest = {tinyImageLinearModelClutch, tinyImageLinearModelHobo, tinyImageLinearModelFlats, tinyImageLinearModelPumps,
+//				tinyImageRBFModelClutch, tinyImageRBFModelHobo, tinyImageRBFModelFlats, tinyImageRBFModelPumps};
+//		
+//		// Testing, evaluate the image under each model above and take the argmax over all the models
+//		TestingImage[] testImages = svm.getTestingImages();
+//		List<Result> results = new ArrayList<>();
+//		int predictRight = 0;
+//		int count = 0;
+//		for (TestingImage image : testImages) {
+//			
+//			results.add(svm.test(modelsToTest[0], image.image, false, Classes.CLUTCH));
+//			results.add(svm.test(modelsToTest[1], image.image, false, Classes.HOBO));
+//			results.add(svm.test(modelsToTest[2], image.image, false, Classes.FLATS));
+//			results.add(svm.test(modelsToTest[3], image.image, false, Classes.PUMPS));
+//			results.add(svm.test(modelsToTest[4], image.image, false, Classes.CLUTCH));
+//			results.add(svm.test(modelsToTest[5], image.image, false, Classes.HOBO));
+//			results.add(svm.test(modelsToTest[6], image.image, false, Classes.FLATS));
+//			results.add(svm.test(modelsToTest[7], image.image, false, Classes.PUMPS));
+//			
+//			double highestProb = 0.0;
+//			Result bestResult = null;
+//			for (Result r: results) {
+//				if (r.prob > highestProb) {
+//					highestProb = r.prob;
+//					bestResult = r;
+//				}
+//			}
+//			
+//			if (bestResult.classification == image.expectedClass) {
+//				predictRight++;
+//			}
+//			
+//			count++;
+//		}
+//		
+//		System.out.println("accuracy is " + (predictRight * 1.0) / count);
+		
+		// TESTING W/ HISTOGRAM REPRESENTATION
+//		svm_model histoLinearModelClutch = svm.trainSVM(Classes.CLUTCH, 4.5, .5, false, true);
+//		svm_model histoLinearModelHobo = svm.trainSVM(Classes.HOBO, 2.5, .5, false, true);
+//		svm_model histoLinearModelFlats = svm.trainSVM(Classes.FLATS, 3.3, .5, false, true);
+//		svm_model histoLinearModelPumps = svm.trainSVM(Classes.PUMPS, 2.9, .5, false, true);
+//		
+//		svm_model histoRBFModelClutch = svm.trainSVM(Classes.CLUTCH, 1, 3, true, true);
+//		svm_model histoRBFModelHobo = svm.trainSVM(Classes.HOBO, .5, 4.1, true, true);
+//		svm_model histoRBFModelFlats = svm.trainSVM(Classes.FLATS, 1.2, .4, true, true);
+//		svm_model histoRBFModelPumps = svm.trainSVM(Classes.PUMPS, 1.2, 2, true, true);
+//		
+//		svm_model[] histoModelsToTest = {histoLinearModelClutch, histoLinearModelHobo, histoLinearModelFlats, histoLinearModelPumps,
+//				histoRBFModelClutch, histoRBFModelHobo, histoRBFModelFlats, histoRBFModelPumps};
+//		
+//		testImages = svm.getTestingImages();
+//		results = new ArrayList<>();
+//		predictRight = 0;
+//		count = 0;
+//		for (TestingImage image : testImages) {
+//			
+//			results.add(svm.test(modelsToTest[0], image.image, false, Classes.CLUTCH));
+//			results.add(svm.test(modelsToTest[1], image.image, false, Classes.HOBO));
+//			results.add(svm.test(modelsToTest[2], image.image, false, Classes.FLATS));
+//			results.add(svm.test(modelsToTest[3], image.image, false, Classes.PUMPS));
+//			results.add(svm.test(modelsToTest[4], image.image, false, Classes.CLUTCH));
+//			results.add(svm.test(modelsToTest[5], image.image, false, Classes.HOBO));
+//			results.add(svm.test(modelsToTest[6], image.image, false, Classes.FLATS));
+//			results.add(svm.test(modelsToTest[7], image.image, false, Classes.PUMPS));
+//			
+//			double highestProb = 0.0;
+//			Result bestResult = null;
+//			for (Result r: results) {
+//				if (r.prob > highestProb) {
+//					highestProb = r.prob;
+//					bestResult = r;
+//				}
+//			}
+//			
+//			if (bestResult.classification == image.expectedClass) {
+//				predictRight++;
+//			}
+//			
+//			count++;
+//		}
+//		
+//		System.out.println("accuracy is " + (predictRight * 1.0) / count);
+		
+		
 		svm_model tinyImageLinearModelClutch = svm.trainSVM(Classes.CLUTCH, 4.5, .5, false, false);
 		svm_model tinyImageLinearModelHobo = svm.trainSVM(Classes.HOBO, 2.5, .5, false, false);
 		svm_model tinyImageLinearModelFlats = svm.trainSVM(Classes.FLATS, 3.3, .5, false, false);
 		svm_model tinyImageLinearModelPumps = svm.trainSVM(Classes.PUMPS, 2.9, .5, false, false);
-		
+		System.out.println("fini");
 		svm_model tinyImageRBFModelClutch = svm.trainSVM(Classes.CLUTCH, 1, 3, true, false);
 		svm_model tinyImageRBFModelHobo = svm.trainSVM(Classes.HOBO, .5, 4.1, true, false);
 		svm_model tinyImageRBFModelFlats = svm.trainSVM(Classes.FLATS, 1.2, .4, true, false);
 		svm_model tinyImageRBFModelPumps = svm.trainSVM(Classes.PUMPS, 1.2, 2, true, false);
+	
+		System.out.println("fini");
+
+		svm_model histoLinearModelClutch = svm.trainSVM(Classes.CLUTCH, 4.5, .5, false, true);
+		svm_model histoLinearModelHobo = svm.trainSVM(Classes.HOBO, 2.5, .5, false, true);
+		svm_model histoLinearModelFlats = svm.trainSVM(Classes.FLATS, 3.3, .5, false, true);
+		svm_model histoLinearModelPumps = svm.trainSVM(Classes.PUMPS, 2.9, .5, false, true);
+		System.out.println("fini");
+
+		svm_model histoRBFModelClutch = svm.trainSVM(Classes.CLUTCH, 1, 3, true, true);
+		svm_model histoRBFModelHobo = svm.trainSVM(Classes.HOBO, .5, 4.1, true, true);
+		svm_model histoRBFModelFlats = svm.trainSVM(Classes.FLATS, 1.2, .4, true, true);
+		svm_model histoRBFModelPumps = svm.trainSVM(Classes.PUMPS, 1.2, 2, true, true);
+		System.out.println("fini");
+
+		TestingImage[] testImages = svm.getTestingImages();
 		
 		svm_model[] modelsToTest = {tinyImageLinearModelClutch, tinyImageLinearModelHobo, tinyImageLinearModelFlats, tinyImageLinearModelPumps,
-				tinyImageRBFModelClutch, tinyImageRBFModelHobo, tinyImageRBFModelFlats, tinyImageRBFModelPumps};
+				tinyImageRBFModelClutch, tinyImageRBFModelHobo, tinyImageRBFModelFlats, tinyImageRBFModelPumps, histoLinearModelClutch, 
+				histoLinearModelHobo, histoLinearModelFlats, histoLinearModelPumps,histoRBFModelClutch, histoRBFModelHobo, 
+				histoRBFModelFlats, histoRBFModelPumps};
 		
-		// Testing, evaluate the image under each model above and take the argmax over all the models
-		TestingImage[] testImages = svm.getTestingImages();
-		List<Result> results = new ArrayList<>();
-		int predictRight = 0;
-		int count = 0;
+		double numCorrect = 0;
 		for (TestingImage image : testImages) {
-			
-			results.add(svm.test(modelsToTest[0], image.image, false, Classes.CLUTCH));
-			results.add(svm.test(modelsToTest[1], image.image, false, Classes.HOBO));
-			results.add(svm.test(modelsToTest[2], image.image, false, Classes.FLATS));
-			results.add(svm.test(modelsToTest[3], image.image, false, Classes.PUMPS));
-			results.add(svm.test(modelsToTest[4], image.image, false, Classes.CLUTCH));
-			results.add(svm.test(modelsToTest[5], image.image, false, Classes.HOBO));
-			results.add(svm.test(modelsToTest[6], image.image, false, Classes.FLATS));
-			results.add(svm.test(modelsToTest[7], image.image, false, Classes.PUMPS));
-			
-			double highestProb = 0.0;
-			Result bestResult = null;
-			for (Result r: results) {
-				if (r.prob > highestProb) {
-					highestProb = r.prob;
-					bestResult = r;
+			Result  r = svm.test(modelsToTest[0], image.image, false, Classes.CLUTCH);
+			if (image.expectedClass != Classes.CLUTCH) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
 				}
+			} else if (image.expectedClass == Classes.CLUTCH) {
+				numCorrect++;
 			}
-			
-			if (bestResult.classification == image.expectedClass) {
-				predictRight++;
-			}
-			
-			count++;
 		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
 		
-		System.out.println("accuracy is " + (predictRight * 1.0) / count);
-		
-		// TESTING W/ HISTOGRAM REPRESENTATION
+		numCorrect = 0;
 
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[1], image.image, false, Classes.HOBO);
+			if (image.expectedClass != Classes.CLUTCH) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.CLUTCH) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		numCorrect = 0;
+
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[2], image.image, false, Classes.FLATS);
+			if (image.expectedClass != Classes.FLATS) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.FLATS) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[3], image.image, false, Classes.PUMPS);
+			if (image.expectedClass != Classes.PUMPS) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.PUMPS) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[4], image.image, false, Classes.CLUTCH);
+			if (image.expectedClass != Classes.CLUTCH) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.CLUTCH) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[5], image.image, false, Classes.HOBO);
+			if (image.expectedClass != Classes.HOBO) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.HOBO) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[6], image.image, false, Classes.FLATS);
+			if (image.expectedClass != Classes.FLATS) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.FLATS) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[7], image.image, false, Classes.PUMPS);
+			if (image.expectedClass != Classes.PUMPS) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.PUMPS) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[8], image.image, false, Classes.CLUTCH);
+			if (image.expectedClass != Classes.CLUTCH) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.CLUTCH) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[9], image.image, false, Classes.HOBO);
+			if (image.expectedClass != Classes.HOBO) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.HOBO) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[10], image.image, false, Classes.FLATS);
+			if (image.expectedClass != Classes.FLATS) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.FLATS) {
+				numCorrect++;
+			}
+		}		
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[11], image.image, false, Classes.PUMPS);
+			if (image.expectedClass != Classes.PUMPS) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.PUMPS) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[12], image.image, false, Classes.CLUTCH);
+			if (image.expectedClass != Classes.CLUTCH) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.CLUTCH) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[13], image.image, false, Classes.HOBO);
+			if (image.expectedClass != Classes.HOBO) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.HOBO) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		
+		
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[14], image.image, false, Classes.FLATS);
+			if (image.expectedClass != Classes.FLATS) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.FLATS) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
+		
+		numCorrect = 0;
+		for (TestingImage image : testImages) {
+			Result  r = svm.test(modelsToTest[15], image.image, false, Classes.PUMPS);
+			if (image.expectedClass != Classes.PUMPS) {
+				if (r.prob <= 0.5) {
+					numCorrect++;
+				}
+			} else if (image.expectedClass == Classes.PUMPS) {
+				numCorrect++;
+			}
+		}
+		System.out.println("The Accuracy for this is " + numCorrect / testImages.length );
 	}
 
 }

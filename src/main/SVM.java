@@ -26,7 +26,7 @@ public class SVM {
 		};
 	}
 	
-	private static final int NUM_CLASSES = 4;
+	private static final int NUM_CLASSES = 20;
 	private static final double PERCENTAGE_TRAINING = .70;
 	private static final double DEFAULT_GAMMA = 0.5;
 	private static final int NUM_TEST_IMAGES = 3;
@@ -272,7 +272,7 @@ public class SVM {
 	class Result {
 		double prob;
 		Classes classification;
-		public Result(double prob, Classes classifcation) {
+		public Result(double prob, Classes classification) {
 			this.prob = prob;
 			this.classification = classification;
 		}

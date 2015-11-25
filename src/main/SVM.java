@@ -29,6 +29,7 @@ public class SVM {
 	private static final int NUM_CLASSES = 4;
 	private static final double PERCENTAGE_TRAINING = .70;
 	private static final double DEFAULT_GAMMA = 0.5;
+	private static final int NUM_TEST_IMAGES = 3;
 
 	// List containing training and testing images for each class. 
 	// Classes.index corresponds to the index in each List
@@ -107,6 +108,25 @@ public class SVM {
 		
 	}
 
+	public class TestingImage {
+		Classes expectedClass;
+		BufferedImage image;
+		public TestingImage(Classes expected, BufferedImage image) {
+			this.expectedClass = expected;
+			this.image = image;
+		}
+	}
+	public TestingImage[] getTestingImages() {
+		TestingImage[] images = new TestingImage[NUM_TEST_IMAGES * 4];
+		for (int i = 0; i < NUM_TEST_IMAGES * 4; i++) {
+			
+			BufferedImage image = testingImages.get(i % 4).get((int) (Math.random() * 20));
+			Classes expectedClass = Classes.values()[i % 4];
+			images[i] =  new TestingImage(expectedClass, image);
+		}
+		return images;
+	}
+	
 	private <T> List<Integer> generateRandomIndexes(List<T> images,
 			int numberOfTestingData) {
 		List<Integer> randomIndexes = new ArrayList<>();
@@ -227,7 +247,34 @@ public class SVM {
 	    return percentageCorrect;
 	}
 	
-	public double test(svm_model model) {
-		return 0.0;
+	public Result test(svm_model model, BufferedImage image, boolean isHisto, Classes expectedClass) {
+		svm_node[] nodes = null;
+		if (!isHisto) {
+			nodes = ConverterHelper.convertVector(ConverterHelper.concatenateImage(image));
+		} else {
+			nodes = ConverterHelper.convertHistogram(ConverterHelper.sortImage(image));
+		}
+		double[] prob_estimates = new double[2];
+		int[] labels = new int[2];
+	    svm.svm_get_labels(model,labels);
+		double v = svm.svm_predict_probability(model, nodes, prob_estimates);
+		double highestProb = 0;
+		int highestProbIndex = 0;
+	    for (int i = 0; i < 2; i++){
+	    	if (prob_estimates[i] > highestProb) {
+	    		highestProbIndex = i;
+	    		highestProb = prob_estimates[i];
+	    	}
+	    }
+		return new Result(prob_estimates[0], expectedClass);
+	}
+	
+	class Result {
+		double prob;
+		Classes classification;
+		public Result(double prob, Classes classifcation) {
+			this.prob = prob;
+			this.classification = classification;
+		}
 	}
 }
